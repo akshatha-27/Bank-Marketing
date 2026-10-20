@@ -9,7 +9,8 @@ preprocessor = joblib.load("preprocessor.pkl")
 st.set_page_config(
     page_title="Bank Marketing Prediction",
     page_icon="🏦",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
 st.title("🏦 Bank Marketing Prediction")
