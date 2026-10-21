@@ -9,8 +9,7 @@ preprocessor = joblib.load("preprocessor.pkl")
 st.set_page_config(
     page_title="Bank Marketing Prediction",
     page_icon="🏦",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    layout="wide"
 )
 
 st.title("🏦 Bank Marketing Prediction")
@@ -22,7 +21,9 @@ st.write(
 st.divider()
 
 with st.form("customer_form"):
-    st.subheader("Enter Customer Details")
+
+    # PERSONAL DETAILS
+    st.subheader("👤 Personal Details")
 
     col1, col2 = st.columns(2)
 
@@ -43,24 +44,44 @@ with st.form("customer_form"):
             "Marital Status",
             ["married", "single", "divorced"]
         )
+
+    with col2:
         education = st.selectbox(
             "Education",
             ["secondary", "tertiary", "primary", "unknown"]
         )
-        default = st.selectbox(
-            "Credit in Default", ["no", "yes"]
-        )
+
+    st.divider()
+
+    # FINANCIAL DETAILS
+    st.subheader("💰 Financial Details")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
         balance = st.number_input(
             "Average Yearly Balance", value=1000
+        )
+        default = st.selectbox(
+            "Credit in Default", ["no", "yes"]
         )
         housing = st.selectbox(
             "Housing Loan", ["yes", "no"]
         )
+
+    with col2:
         loan = st.selectbox(
             "Personal Loan", ["no", "yes"]
         )
 
-    with col2:
+    st.divider()
+
+    # CAMPAIGN DETAILS
+    st.subheader("📞 Campaign Details")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
         contact = st.selectbox(
             "Contact Type",
             ["cellular", "telephone", "unknown"]
@@ -80,6 +101,8 @@ with st.form("customer_form"):
             "Last Call Duration (seconds)",
             min_value=0, value=180
         )
+
+    with col2:
         campaign = st.number_input(
             "Contacts During This Campaign",
             min_value=1, value=1
@@ -97,12 +120,15 @@ with st.form("customer_form"):
             ["unknown", "failure", "other", "success"]
         )
 
+    st.divider()
+
     submitted = st.form_submit_button(
         "Predict Subscription",
         use_container_width=True
     )
 
 if submitted:
+
     customer = pd.DataFrame([{
         "age": age,
         "job": job,
@@ -123,13 +149,13 @@ if submitted:
     }])
 
     try:
-        # Apply the same preprocessing used during training
+        # Apply fitted preprocessing
         customer_processed = preprocessor.transform(customer)
 
-        # Predict the class
+        # Predict subscription
         prediction = model.predict(customer_processed)[0]
 
-        # Get probability for class 1 (subscription = yes)
+        # Calculate subscription probability
         probabilities = model.predict_proba(customer_processed)[0]
         class_index = list(model.classes_).index(1)
         probability = probabilities[class_index] * 100
