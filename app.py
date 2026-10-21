@@ -15,29 +15,36 @@ st.set_page_config(
 # Custom styling
 st.markdown("""
 <style>
-/* Predict button */
-div.stButton > button,
-div.stFormSubmitButton > button {
-    background-color: #2563EB;
+
+/* Reduce the width of the main details container */
+div[data-testid="stForm"] {
+    max-width: 850px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Red prediction button */
+div[data-testid="stFormSubmitButton"] button {
+    background-color: #DC2626;
     color: white;
     border: none;
     border-radius: 8px;
     font-weight: 600;
 }
 
-/* Button hover */
-div.stButton > button:hover,
-div.stFormSubmitButton > button:hover {
-    background-color: #1D4ED8;
+/* Darker red on hover */
+div[data-testid="stFormSubmitButton"] button:hover {
+    background-color: #B91C1C;
     color: white;
     border: none;
 }
 
-/* Input field appearance */
+/* Input field styling */
 div[data-baseweb="select"] > div,
 div[data-baseweb="input"] > div {
     border-radius: 6px;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
