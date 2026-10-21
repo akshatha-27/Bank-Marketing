@@ -13,6 +13,7 @@ st.set_page_config(
 )
 
 st.title("🏦 Bank Marketing Prediction")
+
 st.write(
     "Predict whether a customer is likely to subscribe "
     "to a term deposit using a Random Forest classifier."
@@ -25,12 +26,14 @@ with st.form("customer_form"):
     # PERSONAL DETAILS
     st.subheader("👤 Personal Details")
 
-    col1, col2 = st.columns(2)
+    c = st.columns(4)
 
-    with col1:
+    with c[0]:
         age = st.number_input(
             "Age", min_value=18, max_value=100, value=35
         )
+
+    with c[1]:
         job = st.selectbox(
             "Job",
             [
@@ -40,12 +43,14 @@ with st.form("customer_form"):
                 "technician", "unemployed", "unknown"
             ]
         )
+
+    with c[2]:
         marital = st.selectbox(
             "Marital Status",
             ["married", "single", "divorced"]
         )
 
-    with col2:
+    with c[3]:
         education = st.selectbox(
             "Education",
             ["secondary", "tertiary", "primary", "unknown"]
@@ -56,20 +61,24 @@ with st.form("customer_form"):
     # FINANCIAL DETAILS
     st.subheader("💰 Financial Details")
 
-    col1, col2 = st.columns(2)
+    c = st.columns(4)
 
-    with col1:
+    with c[0]:
         balance = st.number_input(
             "Average Yearly Balance", value=1000
         )
+
+    with c[1]:
         default = st.selectbox(
             "Credit in Default", ["no", "yes"]
         )
+
+    with c[2]:
         housing = st.selectbox(
             "Housing Loan", ["yes", "no"]
         )
 
-    with col2:
+    with c[3]:
         loan = st.selectbox(
             "Personal Loan", ["no", "yes"]
         )
@@ -79,44 +88,56 @@ with st.form("customer_form"):
     # CAMPAIGN DETAILS
     st.subheader("📞 Campaign Details")
 
-    col1, col2 = st.columns(2)
+    c = st.columns(8)
 
-    with col1:
+    with c[0]:
         contact = st.selectbox(
             "Contact Type",
             ["cellular", "telephone", "unknown"]
         )
+
+    with c[1]:
         day = st.number_input(
-            "Last Contact Day",
+            "Contact Day",
             min_value=1, max_value=31, value=15
         )
+
+    with c[2]:
         month = st.selectbox(
-            "Last Contact Month",
+            "Contact Month",
             [
                 "jan", "feb", "mar", "apr", "may", "jun",
                 "jul", "aug", "sep", "oct", "nov", "dec"
             ]
         )
+
+    with c[3]:
         duration = st.number_input(
-            "Last Call Duration (seconds)",
+            "Call Duration (sec)",
             min_value=0, value=180
         )
 
-    with col2:
+    with c[4]:
         campaign = st.number_input(
-            "Contacts During This Campaign",
+            "Campaign Contacts",
             min_value=1, value=1
         )
+
+    with c[5]:
         pdays = st.number_input(
-            "Days Since Previous Contact",
+            "Previous Contact Days",
             min_value=-1, value=-1
         )
+
+    with c[6]:
         previous = st.number_input(
             "Previous Contacts",
             min_value=0, value=0
         )
+
+    with c[7]:
         poutcome = st.selectbox(
-            "Previous Campaign Outcome",
+            "Previous Outcome",
             ["unknown", "failure", "other", "success"]
         )
 
@@ -127,6 +148,8 @@ with st.form("customer_form"):
         use_container_width=True
     )
 
+
+# PREDICTION
 if submitted:
 
     customer = pd.DataFrame([{
@@ -149,13 +172,13 @@ if submitted:
     }])
 
     try:
-        # Apply fitted preprocessing
+        # Apply the fitted preprocessing pipeline
         customer_processed = preprocessor.transform(customer)
 
-        # Predict subscription
+        # Predict the class
         prediction = model.predict(customer_processed)[0]
 
-        # Calculate subscription probability
+        # Calculate probability of subscription
         probabilities = model.predict_proba(customer_processed)[0]
         class_index = list(model.classes_).index(1)
         probability = probabilities[class_index] * 100
