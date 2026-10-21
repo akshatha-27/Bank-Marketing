@@ -15,8 +15,17 @@ st.set_page_config(
 # Custom styling
 st.markdown("""
 <style>
+/* Center the main heading */
+h1 {
+    text-align: center;
+}
 
-/* Reduce the width of the main details container */
+/* Center the description */
+.stApp p {
+    text-align: center;
+}
+
+/* Keep the form centered and narrow */
 div[data-testid="stForm"] {
     max-width: 850px;
     margin-left: auto;
@@ -32,19 +41,11 @@ div[data-testid="stFormSubmitButton"] button {
     font-weight: 600;
 }
 
-/* Darker red on hover */
 div[data-testid="stFormSubmitButton"] button:hover {
     background-color: #B91C1C;
     color: white;
     border: none;
 }
-
-/* Input field styling */
-div[data-baseweb="select"] > div,
-div[data-baseweb="input"] > div {
-    border-radius: 6px;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
