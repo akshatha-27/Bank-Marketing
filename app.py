@@ -12,6 +12,35 @@ st.set_page_config(
     layout="wide"
 )
 
+# Custom styling
+st.markdown("""
+<style>
+/* Predict button */
+div.stButton > button,
+div.stFormSubmitButton > button {
+    background-color: #2563EB;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* Button hover */
+div.stButton > button:hover,
+div.stFormSubmitButton > button:hover {
+    background-color: #1D4ED8;
+    color: white;
+    border: none;
+}
+
+/* Input field appearance */
+div[data-baseweb="select"] > div,
+div[data-baseweb="input"] > div {
+    border-radius: 6px;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.title("🏦 Bank Marketing Prediction")
 
 st.write(
@@ -26,128 +55,102 @@ with st.form("customer_form"):
     # PERSONAL DETAILS
     st.subheader("👤 Personal Details")
 
-    c = st.columns(4)
+    age = st.number_input(
+        "Age", min_value=18, max_value=100, value=35
+    )
 
-    with c[0]:
-        age = st.number_input(
-            "Age", min_value=18, max_value=100, value=35
-        )
+    job = st.selectbox(
+        "Job",
+        [
+            "admin.", "blue-collar", "entrepreneur",
+            "housemaid", "management", "retired",
+            "self-employed", "services", "student",
+            "technician", "unemployed", "unknown"
+        ]
+    )
 
-    with c[1]:
-        job = st.selectbox(
-            "Job",
-            [
-                "admin.", "blue-collar", "entrepreneur",
-                "housemaid", "management", "retired",
-                "self-employed", "services", "student",
-                "technician", "unemployed", "unknown"
-            ]
-        )
+    marital = st.selectbox(
+        "Marital Status",
+        ["married", "single", "divorced"]
+    )
 
-    with c[2]:
-        marital = st.selectbox(
-            "Marital Status",
-            ["married", "single", "divorced"]
-        )
-
-    with c[3]:
-        education = st.selectbox(
-            "Education",
-            ["secondary", "tertiary", "primary", "unknown"]
-        )
+    education = st.selectbox(
+        "Education",
+        ["secondary", "tertiary", "primary", "unknown"]
+    )
 
     st.divider()
 
     # FINANCIAL DETAILS
     st.subheader("💰 Financial Details")
 
-    c = st.columns(4)
+    balance = st.number_input(
+        "Average Yearly Balance", value=1000
+    )
 
-    with c[0]:
-        balance = st.number_input(
-            "Average Yearly Balance", value=1000
-        )
+    default = st.selectbox(
+        "Credit in Default", ["no", "yes"]
+    )
 
-    with c[1]:
-        default = st.selectbox(
-            "Credit in Default", ["no", "yes"]
-        )
+    housing = st.selectbox(
+        "Housing Loan", ["yes", "no"]
+    )
 
-    with c[2]:
-        housing = st.selectbox(
-            "Housing Loan", ["yes", "no"]
-        )
-
-    with c[3]:
-        loan = st.selectbox(
-            "Personal Loan", ["no", "yes"]
-        )
+    loan = st.selectbox(
+        "Personal Loan", ["no", "yes"]
+    )
 
     st.divider()
 
     # CAMPAIGN DETAILS
     st.subheader("📞 Campaign Details")
 
-    c = st.columns(8)
+    contact = st.selectbox(
+        "Contact Type",
+        ["cellular", "telephone", "unknown"]
+    )
 
-    with c[0]:
-        contact = st.selectbox(
-            "Contact Type",
-            ["cellular", "telephone", "unknown"]
-        )
+    day = st.number_input(
+        "Contact Day", min_value=1, max_value=31, value=15
+    )
 
-    with c[1]:
-        day = st.number_input(
-            "Contact Day",
-            min_value=1, max_value=31, value=15
-        )
+    month = st.selectbox(
+        "Contact Month",
+        [
+            "jan", "feb", "mar", "apr", "may", "jun",
+            "jul", "aug", "sep", "oct", "nov", "dec"
+        ]
+    )
 
-    with c[2]:
-        month = st.selectbox(
-            "Contact Month",
-            [
-                "jan", "feb", "mar", "apr", "may", "jun",
-                "jul", "aug", "sep", "oct", "nov", "dec"
-            ]
-        )
+    duration = st.number_input(
+        "Call Duration (seconds)", min_value=0, value=180
+    )
 
-    with c[3]:
-        duration = st.number_input(
-            "Call Duration (sec)",
-            min_value=0, value=180
-        )
+    campaign = st.number_input(
+        "Contacts During This Campaign",
+        min_value=1, value=1
+    )
 
-    with c[4]:
-        campaign = st.number_input(
-            "Campaign Contacts",
-            min_value=1, value=1
-        )
+    pdays = st.number_input(
+        "Days Since Previous Contact",
+        min_value=-1, value=-1
+    )
 
-    with c[5]:
-        pdays = st.number_input(
-            "Previous Contact Days",
-            min_value=-1, value=-1
-        )
+    previous = st.number_input(
+        "Previous Contacts", min_value=0, value=0
+    )
 
-    with c[6]:
-        previous = st.number_input(
-            "Previous Contacts",
-            min_value=0, value=0
-        )
-
-    with c[7]:
-        poutcome = st.selectbox(
-            "Previous Outcome",
-            ["unknown", "failure", "other", "success"]
-        )
+    poutcome = st.selectbox(
+        "Previous Campaign Outcome",
+        ["unknown", "failure", "other", "success"]
+    )
 
     st.divider()
 
     submitted = st.form_submit_button(
-        "Predict Subscription",
+        "🔍 Predict Subscription",
         use_container_width=True
     )
-
 
 # PREDICTION
 if submitted:
@@ -172,19 +175,19 @@ if submitted:
     }])
 
     try:
-        # Apply the fitted preprocessing pipeline
+        # Apply fitted preprocessing
         customer_processed = preprocessor.transform(customer)
 
-        # Predict the class
+        # Predict customer subscription
         prediction = model.predict(customer_processed)[0]
 
-        # Calculate probability of subscription
+        # Calculate subscription probability
         probabilities = model.predict_proba(customer_processed)[0]
         class_index = list(model.classes_).index(1)
         probability = probabilities[class_index] * 100
 
         st.divider()
-        st.subheader("Prediction Result")
+        st.subheader("📊 Prediction Result")
 
         if prediction == 1:
             st.success(
