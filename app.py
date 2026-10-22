@@ -23,18 +23,35 @@ except Exception as e:
     st.stop()
 
 # Custom styling
+
 st.markdown("""
 <style>
+/* Center the main heading */
 h1 {
     text-align: center;
 }
 
+/* Center the description */
+.stApp p {
+    text-align: center;
+}
+
+/* Center the main content and limit its width */
+.block-container {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 2rem;
+}
+
+/* Center and narrow the form */
 div[data-testid="stForm"] {
     max-width: 850px;
     margin-left: auto;
     margin-right: auto;
 }
 
+/* Red prediction button */
 div[data-testid="stFormSubmitButton"] button {
     background-color: #DC2626;
     color: white;
@@ -48,12 +65,9 @@ div[data-testid="stFormSubmitButton"] button:hover {
     color: white;
     border: none;
 }
-
-.result-heading {
-    text-align: center;
-}
 </style>
 """, unsafe_allow_html=True)
+
 
 # Application heading
 st.title("🏦 Bank Marketing Prediction")
