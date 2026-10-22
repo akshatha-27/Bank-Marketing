@@ -197,28 +197,28 @@ if submitted:
         st.divider()
         st.subheader("📊 Prediction Result")
 
-if prediction == 1:
-    st.success("The model predicts that the customer is likely to subscribe.")
-else:
-    st.warning("The model predicts that the customer is unlikely to subscribe.")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.metric(
-        label="✅ Probability of Subscribing",
-        value=f"{subscription_probability:.2f}%"
-    )
-
-with col2:
-    st.metric(
-        label="❌ Probability of Not Subscribing",
-        value=f"{non_subscription_probability:.2f}%"
-    )
-
-st.caption(
-    "Predictions are estimates and do not guarantee actual customer behavior."
-)
+        if prediction == 1:
+            st.success("The model predicts that the customer is likely to subscribe.")
+        else:
+            st.warning("The model predicts that the customer is unlikely to subscribe.")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.metric(
+                label="✅ Probability of Subscribing",
+                value=f"{subscription_probability:.2f}%"
+            )
+        
+        with col2:
+            st.metric(
+                label="❌ Probability of Not Subscribing",
+                value=f"{non_subscription_probability:.2f}%"
+            )
+        
+        st.caption(
+            "Predictions are estimates and do not guarantee actual customer behavior."
+        )
 
     except Exception as e:
         st.error(f"Prediction error: {e}")
