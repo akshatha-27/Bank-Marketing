@@ -191,8 +191,12 @@ if submitted:
 
         # Calculate subscription probability
         probabilities = model.predict_proba(customer_processed)[0]
-        class_index = list(model.classes_).index(1)
-        probability = probabilities[class_index] * 100
+        
+        class_index_yes = list(model.classes_).index(1)
+        class_index_no = list(model.classes_).index(0)
+
+        subscription_probability = probabilities[class_index_yes] * 100
+        non_subscription_probability = probabilities[class_index_no] * 100
 
         st.divider()
         st.subheader("📊 Prediction Result")
