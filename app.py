@@ -2,37 +2,39 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# Load trained model and fitted preprocessor
-model = joblib.load("random_forest_model.pkl")
-preprocessor = joblib.load("preprocessor.pkl")
-
+# Page configuration
 st.set_page_config(
     page_title="Bank Marketing Prediction",
     page_icon="🏦",
     layout="wide"
 )
 
+# Load trained model and fitted preprocessor
+@st.cache_resource
+def load_models():
+    model = joblib.load("random_forest_model.pkl")
+    preprocessor = joblib.load("preprocessor.pkl")
+    return model, preprocessor
+
+try:
+    model, preprocessor = load_models()
+except Exception as e:
+    st.error(f"Error loading model or preprocessor: {e}")
+    st.stop()
+
 # Custom styling
 st.markdown("""
 <style>
-/* Center the main heading */
 h1 {
     text-align: center;
 }
 
-/* Center the description */
-.stApp p {
-    text-align: center;
-}
-
-/* Keep the form centered and narrow */
 div[data-testid="stForm"] {
     max-width: 850px;
     margin-left: auto;
     margin-right: auto;
 }
 
-/* Red prediction button */
 div[data-testid="stFormSubmitButton"] button {
     background-color: #DC2626;
     color: white;
@@ -46,9 +48,14 @@ div[data-testid="stFormSubmitButton"] button:hover {
     color: white;
     border: none;
 }
+
+.result-heading {
+    text-align: center;
+}
 </style>
 """, unsafe_allow_html=True)
 
+# Application heading
 st.title("🏦 Bank Marketing Prediction")
 
 st.write(
@@ -58,9 +65,9 @@ st.write(
 
 st.divider()
 
+# Customer input form
 with st.form("customer_form"):
 
-    # PERSONAL DETAILS
     st.subheader("👤 Personal Details")
 
     age = st.number_input(
@@ -89,7 +96,6 @@ with st.form("customer_form"):
 
     st.divider()
 
-    # FINANCIAL DETAILS
     st.subheader("💰 Financial Details")
 
     balance = st.number_input(
@@ -110,7 +116,6 @@ with st.form("customer_form"):
 
     st.divider()
 
-    # CAMPAIGN DETAILS
     st.subheader("📞 Campaign Details")
 
     contact = st.selectbox(
@@ -160,7 +165,7 @@ with st.form("customer_form"):
         use_container_width=True
     )
 
-# PREDICTION
+# Prediction section
 if submitted:
 
     customer = pd.DataFrame([{
@@ -183,45 +188,67 @@ if submitted:
     }])
 
     try:
-        # Apply fitted preprocessing
+        # Apply the fitted preprocessing pipeline
         customer_processed = preprocessor.transform(customer)
 
-        # Predict customer subscription
+        # Predict the class
         prediction = model.predict(customer_processed)[0]
 
-        # Calculate subscription probability
+        # Get probabilities for both classes
         probabilities = model.predict_proba(customer_processed)[0]
-        
-        class_index_yes = list(model.classes_).index(1)
-        class_index_no = list(model.classes_).index(0)
 
-        subscription_probability = probabilities[class_index_yes] * 100
-        non_subscription_probability = probabilities[class_index_no] * 100
+        # Find probability positions using the model's class labels
+        classes = list(model.classes_)
+        class_index_yes = classes.index(1)
+        class_index_no = classes.index(0)
 
+        subscription_probability = (
+            probabilities[class_index_yes] * 100
+        )
+
+        non_subscription_probability = (
+            probabilities[class_index_no] * 100
+        )
+
+        # Display results
         st.divider()
         st.subheader("📊 Prediction Result")
 
         if prediction == 1:
-            st.success("The model predicts that the customer is likely to subscribe.")
+            st.success(
+                "The model predicts that the customer "
+                "is likely to subscribe."
+            )
         else:
-            st.warning("The model predicts that the customer is unlikely to subscribe.")
-        
+            st.warning(
+                "The model predicts that the customer "
+                "is unlikely to subscribe."
+            )
+
+        # Display both probabilities
         col1, col2 = st.columns(2)
-        
+
         with col1:
             st.metric(
                 label="✅ Probability of Subscribing",
                 value=f"{subscription_probability:.2f}%"
             )
-        
+            st.progress(
+                min(max(subscription_probability / 100, 0.0), 1.0)
+            )
+
         with col2:
             st.metric(
                 label="❌ Probability of Not Subscribing",
                 value=f"{non_subscription_probability:.2f}%"
             )
-        
+            st.progress(
+                min(max(non_subscription_probability / 100, 0.0), 1.0)
+            )
+
         st.caption(
-            "Predictions are estimates and do not guarantee actual customer behavior."
+            "Predictions are estimates and do not guarantee "
+            "actual customer behavior."
         )
 
     except Exception as e:
